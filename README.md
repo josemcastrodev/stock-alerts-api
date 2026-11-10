@@ -85,15 +85,14 @@ Los errores se devuelven como `ProblemDetails` (RFC 9457); los de validación in
 
 ```mermaid
 stateDiagram-v2
-    direction LR
     [*] --> Unknown
     Unknown --> InStock: hay stock
     Unknown --> OutOfStock: agotado
     InStock --> OutOfStock: agotado
-    OutOfStock --> InStock: hay stock (genera alertas)
-    InStock --> InStock: fallo (no cambia)
-    OutOfStock --> OutOfStock: fallo (no cambia)
+    OutOfStock --> InStock: hay stock, genera alertas
 ```
+
+Una comprobación fallida no aparece en el diagrama porque no mueve el estado.
 
 - **Un fallo al comprobar no es "agotado".** Una comprobación puede terminar en `InStock`, `OutOfStock` o `Failed`, pero el estado de un listing solo puede ser `Unknown`, `InStock` u `OutOfStock`: si la comprobación falla, el estado no se toca. En la aplicación real guardar el fallo como "agotado" hacía que la siguiente comprobación correcta pareciera una reposición y se enviaran avisos falsos.
 - **Solo hay alerta en la transición confirmada `OutOfStock -> InStock`.** `Unknown -> InStock` es la primera vez que se ve el listing, no una reposición. El estado y las alertas se guardan en la misma transacción y `Status` es *concurrency token*, así que si dos instancias detectan la misma reposición solo una la guarda y no hay alertas duplicadas.
