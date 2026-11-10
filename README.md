@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/cover.jpg" alt="stock-alerts-api · API REST de avisos de stock · ASP.NET Core, EF Core, SQL Server, JWT, xUnit, Docker" width="100%">
+  <img src="docs/portada.jpg" alt="stock-alerts-api · API REST de avisos de stock · ASP.NET Core, EF Core, SQL Server, JWT, xUnit, Docker" width="100%">
 </p>
 
 # stock-alerts-api
