@@ -1,6 +1,12 @@
+<p align="center">
+  <img src="docs/cover.jpg" alt="stock-alerts-api · API REST de avisos de stock · ASP.NET Core, EF Core, SQL Server, JWT, xUnit, Docker" width="100%">
+</p>
+
 # stock-alerts-api
 
 [![CI](https://github.com/josemcastrodev/stock-alerts-api/actions/workflows/ci.yml/badge.svg)](https://github.com/josemcastrodev/stock-alerts-api/actions/workflows/ci.yml)
+![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-41-2D6A3E?style=flat-square)
 
 API REST en ASP.NET Core (.NET 10) que avisa a los usuarios cuando un producto vuelve a tener stock en una tienda.
 
@@ -19,6 +25,10 @@ dotnet run --project src/StockAlerts.Api
 ```
 
 Y abrir <http://localhost:5080/swagger>.
+
+<p align="center">
+  <img src="docs/swagger.png" alt="Swagger UI con los endpoints de la API" width="85%">
+</p>
 
 En desarrollo la aplicación usa SQLite (crea `stockalerts.dev.db` en la carpeta del proyecto), carga un catálogo de demostración y crea un usuario administrador. Sus credenciales, igual que la clave JWT de desarrollo, están en `src/StockAlerts.Api/appsettings.Development.json`.
 
@@ -72,6 +82,18 @@ dotnet run --project src/StockAlerts.Api
 Los errores se devuelven como `ProblemDetails` (RFC 9457); los de validación incluyen el detalle por campo.
 
 ## Decisiones
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> Unknown
+    Unknown --> InStock: hay stock
+    Unknown --> OutOfStock: agotado
+    InStock --> OutOfStock: agotado
+    OutOfStock --> InStock: hay stock (genera alertas)
+    InStock --> InStock: fallo (no cambia)
+    OutOfStock --> OutOfStock: fallo (no cambia)
+```
 
 - **Un fallo al comprobar no es "agotado".** Una comprobación puede terminar en `InStock`, `OutOfStock` o `Failed`, pero el estado de un listing solo puede ser `Unknown`, `InStock` u `OutOfStock`: si la comprobación falla, el estado no se toca. En la aplicación real guardar el fallo como "agotado" hacía que la siguiente comprobación correcta pareciera una reposición y se enviaran avisos falsos.
 - **Solo hay alerta en la transición confirmada `OutOfStock -> InStock`.** `Unknown -> InStock` es la primera vez que se ve el listing, no una reposición. El estado y las alertas se guardan en la misma transacción y `Status` es *concurrency token*, así que si dos instancias detectan la misma reposición solo una la guarda y no hay alertas duplicadas.
