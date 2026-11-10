@@ -1,0 +1,15 @@
+**/bin/
+**/obj/
+**/*.db
+**/*.db-shm
+**/*.db-wal
+.git/
+.github/
+.vs/
+.vscode/
+.idea/
+.env
+tests/
+*.md
+docker-compose.yml
+Dockerfile

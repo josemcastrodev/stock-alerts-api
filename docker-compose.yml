@@ -1,0 +1,39 @@
+# Local sandbox: the API in Production mode against SQL Server.
+# Values come from .env (copy .env.example). Nothing here is meant for a real deployment:
+# the API connects as "sa" only because this database lives and dies with the compose project.
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Copy .env.example to .env first}
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      # $$ keeps the variable for the container's shell instead of compose expanding it.
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Database__Provider: SqlServer
+      ConnectionStrings__Default: "Server=db;Database=StockAlerts;User Id=sa;Password=${MSSQL_SA_PASSWORD};Encrypt=True;TrustServerCertificate=True"
+      Jwt__Key: ${JWT_KEY:?Copy .env.example to .env first}
+      Seed__AdminEmail: ${ADMIN_EMAIL}
+      Seed__AdminPassword: ${ADMIN_PASSWORD}
+      Seed__DemoData: "true"
+      StockCheck__IntervalSeconds: "15"
+    ports:
+      - "8080:8080"
+
+volumes:
+  sqlserver-data:

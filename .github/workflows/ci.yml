@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test --no-build --configuration Release
+
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Builds the image and starts the API in Production mode against SQL Server,
+      # which also applies the migrations for real.
+      - name: Start the stack
+        run: |
+          cp .env.example .env
+          docker compose up --build --detach --wait --wait-timeout 240
+
+      - name: Health check
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --show-error http://localhost:8080/health; then
+              exit 0
+            fi
+            sleep 3
+          done
+          exit 1
+
+      - name: Logs
+        if: failure()
+        run: docker compose logs
+
+      - name: Stop the stack
+        if: always()
+        run: docker compose down --volumes

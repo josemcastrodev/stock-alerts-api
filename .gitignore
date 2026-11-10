@@ -1,0 +1,34 @@
+# Build output
+bin/
+obj/
+publish/
+artifacts/
+
+# Test results and coverage
+TestResults/
+*.trx
+coverage*.xml
+*.coverage
+
+# IDEs
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.DotSettings.user
+
+# Local SQLite databases
+*.db
+*.db-shm
+*.db-wal
+
+# Local secrets and environment files (.env.example is the tracked template)
+.env
+.env.*
+!.env.example
+appsettings.*.local.json
+
+# OS
+.DS_Store
+Thumbs.db
