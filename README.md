@@ -1,5 +1,7 @@
 # stock-alerts-api
 
+[![CI](https://github.com/josemcastrodev/stock-alerts-api/actions/workflows/ci.yml/badge.svg)](https://github.com/josemcastrodev/stock-alerts-api/actions/workflows/ci.yml)
+
 API REST en ASP.NET Core (.NET 9) que avisa a los usuarios cuando un producto vuelve a tener stock en una tienda.
 
 Es un **proyecto de ejemplo**. Reproduce, simplificado y en .NET, el backend de [TCG Stock Up](https://tcgstockup.com), una aplicación mía que en producción está hecha con NestJS. No es el código de producción: aquí no hay scraping ni llamadas a webs externas (el stock lo da una fuente simulada) y el alcance está recortado para que se pueda leer en unos minutos.
@@ -83,6 +85,8 @@ Los errores se devuelven como `ProblemDetails` (RFC 9457); los de validación in
 ```bash
 dotnet test
 ```
+
+La CI ejecuta estos tests y, aparte, levanta el `docker compose` completo (API en modo Production contra SQL Server, con las migraciones aplicadas) y comprueba `/health`.
 
 - `tests/StockAlerts.UnitTests`: la regla de transición de stock (`ListingTests`) y la generación de alertas (`StockCheckServiceTests`), con dobles escritos a mano y sin base de datos.
 - `tests/StockAlerts.IntegrationTests`: la API real con `WebApplicationFactory` sobre SQLite en memoria. Cubre autenticación y autorización, el catálogo, el flujo completo (registro, login, suscripción, reposición, alerta), el caso de dos instancias detectando la misma reposición y que la aplicación no arranca sin clave JWT.
