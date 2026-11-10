@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/josemcastrodev/stock-alerts-api/actions/workflows/ci.yml/badge.svg)](https://github.com/josemcastrodev/stock-alerts-api/actions/workflows/ci.yml)
 
-API REST en ASP.NET Core (.NET 9) que avisa a los usuarios cuando un producto vuelve a tener stock en una tienda.
+API REST en ASP.NET Core (.NET 10) que avisa a los usuarios cuando un producto vuelve a tener stock en una tienda.
 
 Es un **proyecto de ejemplo**. Reproduce, simplificado y en .NET, el backend de [TCG Stock Up](https://tcgstockup.com), una aplicación mía que en producción está hecha con NestJS. No es el código de producción: aquí no hay scraping ni llamadas a webs externas (el stock lo da una fuente simulada) y el alcance está recortado para que se pueda leer en unos minutos.
 
@@ -10,7 +10,7 @@ Autor: [Jose María Castro](https://josemcastro.dev).
 
 ## Arrancarlo
 
-Solo hace falta el SDK de .NET 9:
+Solo hace falta el SDK de .NET 10:
 
 ```bash
 git clone https://github.com/josemcastrodev/stock-alerts-api.git

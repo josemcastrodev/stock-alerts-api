@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using StockAlerts.Api.Workers;
 using StockAlerts.Core.StockChecks;
 using StockAlerts.Infrastructure;
@@ -30,16 +30,18 @@ builder.Services.AddSwaggerGen(swagger =>
 {
     swagger.SwaggerDoc("v1", new OpenApiInfo { Title = "Stock Alerts API", Version = "v1" });
 
-    var bearer = new OpenApiSecurityScheme
+    const string schemeId = "Bearer";
+    swagger.AddSecurityDefinition(schemeId, new OpenApiSecurityScheme
     {
         Type = SecuritySchemeType.Http,
         Scheme = "bearer",
         BearerFormat = "JWT",
         Description = "Access token returned by /api/auth/login.",
-        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" },
-    };
-    swagger.AddSecurityDefinition(bearer.Reference.Id, bearer);
-    swagger.AddSecurityRequirement(new OpenApiSecurityRequirement { [bearer] = [] });
+    });
+    swagger.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference(schemeId, document)] = [],
+    });
 });
 
 var app = builder.Build();
